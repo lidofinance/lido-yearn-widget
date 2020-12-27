@@ -10,7 +10,7 @@
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
-    "export": "next export"
+    "export": "next build && next export"
   },
   "dependencies": {
     "@ethersproject/providers": "^5.0.17",
