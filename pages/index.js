@@ -1,6 +1,7 @@
 import styled from 'styled-components'
 
 import Page from '../components/Page'
+import ConverterCard from '../components/ConverterCard'
 import WalletButton from '../components/WalletButton'
 import { blue, borderGray } from '../components/colors'
 
@@ -33,6 +34,23 @@ const Disclaimer = styled.span`
   border-radius: 8px;
 `
 
+const Content = styled.div``
+
+const converters = [
+  {
+    assetFrom: 'StETH',
+    assetTo: 'YvStETH',
+  },
+  {
+    assetFrom: 'YvStETH',
+    assetTo: 'StETH',
+  },
+  {
+    assetFrom: 'ETH',
+    assetTo: 'YvStETH',
+  },
+]
+
 export default function DefaultPage() {
   return (
     <Page>
@@ -49,6 +67,11 @@ export default function DefaultPage() {
           <WalletButton />
         </Cell>
       </Row>
+      <Content>
+        {converters.map((converter) => (
+          <ConverterCard converter={converter} />
+        ))}
+      </Content>
     </Page>
   )
 }
