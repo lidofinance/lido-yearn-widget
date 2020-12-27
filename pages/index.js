@@ -1,5 +1,6 @@
 import styled from 'styled-components'
 
+import Page from '../components/Page'
 import WalletButton from '../components/WalletButton'
 import { blue, borderGray } from '../components/colors'
 
@@ -10,11 +11,11 @@ const Row = styled.div`
   height: 50px;
 `
 const Cell = styled.div`
-  max-width: 300px;
   height: 100%;
   flex: 1;
   display: flex;
   align-items: center;
+  justify-content: center;
 `
 const Logos = styled.div`
   background: url('/logos.png') no-repeat;
@@ -34,16 +35,20 @@ const Disclaimer = styled.span`
 
 export default function DefaultPage() {
   return (
-    <Row>
-      <Cell>
-        <Logos />
-      </Cell>
-      <Cell>
-        <Disclaimer>This project is in beta. Use at your own risk.</Disclaimer>
-      </Cell>
-      <Cell>
-        <WalletButton />
-      </Cell>
-    </Row>
+    <Page>
+      <Row>
+        <Cell>
+          <Logos />
+        </Cell>
+        <Cell>
+          <Disclaimer>
+            This project is in beta. Use at your own risk.
+          </Disclaimer>
+        </Cell>
+        <Cell>
+          <WalletButton />
+        </Cell>
+      </Row>
+    </Page>
   )
 }
