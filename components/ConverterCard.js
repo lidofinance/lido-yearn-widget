@@ -71,7 +71,7 @@ export default function ConverterCard({ tokenConfig }) {
 
   const balanceStr =
     assetFrom === 'ETH'
-      ? `${parseFloat(formatEther(balance || '0')).toPrecision(4)} Ξ`
+      ? `${parseFloat(formatEther(balance || '0')).toPrecision(6)}`
       : '0.000000'
   return (
     <Card>
