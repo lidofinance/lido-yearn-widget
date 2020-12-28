@@ -60,7 +60,7 @@ const Input = styled.input`
   outline: none;
   border: none;
 
-  font-family: "Consolas";
+  font-family: 'Share Tech Mono';
   font-size: 32px;
   line-height: 32px;
   color: #2A2A2A;

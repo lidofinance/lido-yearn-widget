@@ -13,7 +13,7 @@ import Card from './Card'
 
 const Balance = styled.div`
   margin-top: 36px;
-  font-family: 'Consolas', monospace;
+  font-family: 'Share Tech Mono', monospace;
   font-size: 32px;
   line-height: 24px;
   color: #2a2a2a;
