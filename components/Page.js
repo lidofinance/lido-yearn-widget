@@ -7,6 +7,7 @@ import fetcher from 'swr-eth'
 import { SWRConfig } from 'swr'
 import { useWeb3React } from '@web3-react/core'
 import Header from './Header'
+import { useEagerConnect } from '../hooks/useEagerConnect'
 import { TOKENS_BY_NETWORK } from '../utils'
 
 const GlobalStyle = createGlobalStyle`
@@ -41,6 +42,7 @@ export default function Page({ children }) {
 
 function SwrReadyPage({ children }) {
   const { active, chainId, library } = useWeb3React()
+  useEagerConnect()
 
   const ABIs = useMemo(() => {
     return (TOKENS_BY_NETWORK[chainId] || []).map(({ address, abi }) => [
