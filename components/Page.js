@@ -8,10 +8,14 @@ const GlobalStyle = createGlobalStyle`
     box-sizing: border-box;
     font-family: 'Work Sans', sans serif;
   }
+  body {
+    background-color: #EEF2F4;
+  }
 `
 
 const PageContainer = styled.div`
   min-height: 100vh;
+  background-color: #EEF2F4;
 `
 
 export default function Page({ children }) {
