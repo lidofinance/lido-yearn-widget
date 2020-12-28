@@ -4,3 +4,4 @@
 # build
 /.next
 /out
+yarn-error.log

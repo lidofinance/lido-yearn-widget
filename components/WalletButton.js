@@ -1,4 +1,8 @@
 import styled from 'styled-components'
+import { InjectedConnector } from '@web3-react/injected-connector'
+import { useWeb3React } from '@web3-react/core'
+
+import { Networks } from '../utils'
 import { blue, white } from './colors'
 
 const StyledButton = styled.button`
@@ -12,6 +16,23 @@ const StyledButton = styled.button`
   outline: none;
 `
 
+export const injectedConnector = new InjectedConnector({
+  supportedChainIds: [
+    Networks.MainNet, // Mainet
+    Networks.Rinkeby, // Rinkeby
+  ],
+})
+
 export default function WalletButton() {
-  return <StyledButton>Connect wallet</StyledButton>
+  const { account, activate, active } = useWeb3React()
+
+  return (
+    <StyledButton onClick={() => activate(injectedConnector)}>
+      {active ? formatAddress(account) : 'Connect wallet'}
+    </StyledButton>
+  )
+}
+
+function formatAddress(address) {
+  return `${address.substring(0, 6)}...${address.substring(38)}`
 }

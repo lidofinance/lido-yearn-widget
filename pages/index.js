@@ -2,8 +2,6 @@ import styled from 'styled-components'
 
 import Page from '../components/Page'
 import ConverterCard from '../components/ConverterCard'
-import Header from '../components/Header'
-import { blue, borderGray } from '../components/colors'
 
 import Eth from '../components/token-logos/Eth'
 import Lido from '../components/token-logos/Lido'
@@ -13,7 +11,7 @@ const Title = styled.div`
   margin: 0 auto;
   text-align: center;
   margin-top: 56px;
-  color: #2A2A2A;
+  color: #2a2a2a;
   font-size: 32px;
   max-width: 600px;
 `
@@ -21,7 +19,7 @@ const Subtitle = styled.div`
   margin: 0 auto;
   text-align: center;
   margin-top: 8px;
-  color: #505A7A;
+  color: #505a7a;
   font-size: 16px;
   width: 60%;
   max-width: 600px;
@@ -55,9 +53,11 @@ const tokens = [
 export default function DefaultPage() {
   return (
     <Page>
-      <Header />
       <Title>Yearn Lido St. Ether Vault</Title>
-      <Subtitle>A wrapper for Lido stETH which uses underlying shares instead of balances which can change outside transfers. Built for DeFi.</Subtitle>
+      <Subtitle>
+        A wrapper for Lido stETH which uses underlying shares instead of
+        balances which can change outside transfers. Built for DeFi.
+      </Subtitle>
       <CardWrapper>
         {tokens.map((tokenConfig) => (
           <ConverterCard tokenConfig={tokenConfig} />
