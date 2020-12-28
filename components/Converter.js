@@ -23,7 +23,7 @@ const Panel = styled.div`
 `
 
 const TokenInput = styled.div`
-  border: 1px solid #D1D8DF;
+  border: 1px solid #d1d8df;
   height: 84px;
   border-radius: 12px;
   display: flex;
@@ -38,7 +38,7 @@ const TokenInputFirstRow = styled.div`
   justify-content: space-between;
   font-size: 16px;
   line-height: 24px;
-  color: #505A7A;
+  color: #505a7a;
 `
 
 const TokenInputSecondRow = styled.div`
@@ -49,7 +49,7 @@ const TokenInputSecondRow = styled.div`
   align-items: center;
   font-size: 22px;
   font-weight: 500;
-  color: #2A2A2A;
+  color: #2a2a2a;
 `
 
 const Input = styled.input`
@@ -63,13 +63,13 @@ const Input = styled.input`
   font-family: 'Share Tech Mono';
   font-size: 32px;
   line-height: 32px;
-  color: #2A2A2A;
+  color: #2a2a2a;
   &:focus {
     outline: none;
   }
 
   &::placeholder {
-    color: #B5B7B9;
+    color: #b5b7b9;
   }
 `
 
@@ -77,7 +77,7 @@ const PricePerShare = styled.div`
   margin: 16px auto;
   text-align: center;
   font-size: 18px;
-  color: #505A7A;
+  color: #505a7a;
 `
 
 const ButtonContainer = styled.div`
@@ -93,17 +93,17 @@ const ButtonTag = styled.button`
   border-radius: 6px;
   user-select: none;
   cursor: pointer;
-  transition: all .2s ease-in-out;
+  transition: all 0.2s ease-in-out;
   display: inline-block;
   text-align: center;
   padding: 14px 13px;
   height: 56px;
-  background: ${(props => props.disabled ? '#F4F6F8' : '#1F7BF1')};
-  color: ${(props => props.disabled ? '#B5B7B9' : 'white')};;
+  background: ${(props) => (props.disabled ? '#F4F6F8' : '#1F7BF1')};
+  color: ${(props) => (props.disabled ? '#B5B7B9' : 'white')};
   border: 1px solid transparent;
 
   &:hover {
-    background: ${(props => props.disabled ? '#F4F6F8' : '#1366BF')};
+    background: ${(props) => (props.disabled ? '#F4F6F8' : '#1366BF')};
   }
 
   &:first-child {
