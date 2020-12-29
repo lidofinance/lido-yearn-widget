@@ -1,3 +1,4 @@
+import {useState} from 'react'
 import styled from 'styled-components'
 
 import { white } from './colors'
@@ -117,27 +118,55 @@ const ButtonTag = styled.button`
 
 export default function Converter({ to, from }) {
   const needsApprove = from === 'StETH'
+
+  const [fromAmount, setFromAmount] = useState('')
+  const [toAmount, setToAmount] = useState('')
+
+  function fromHandler(e) {
+    setFromAmount(e.target.value)
+    let value = parseFloat(e.target.value)
+    if (!isNaN(value)) {
+      setToAmount((value / 1.1201).toFixed(4))
+    }
+  }
+
+  function toHandler(e) {
+    setToAmount(e.target.value)
+    let value = parseFloat(e.target.value)
+    if (!isNaN(value)) {
+      setFromAmount((value * 1.1201).toFixed(4))
+    }
+  }
+
   return (
     <Center>
       <Panel>
         <TokenInput>
           <TokenInputFirstRow>
             <span>From</span>
-            <span>Balance: 230.0345</span>
+            <span>Balance: 23.0345</span>
           </TokenInputFirstRow>
           <TokenInputSecondRow>
-            <Input placeholder="0.0000" />
+            <Input
+              value={fromAmount}
+              onChange={(e) => fromHandler(e)}
+              placeholder="0.0000"
+            />
             <span>{from}</span>
           </TokenInputSecondRow>
         </TokenInput>
-        <PricePerShare>Price per share: 1.234556</PricePerShare>
+        <PricePerShare>Price per share: 1.1201</PricePerShare>
         <TokenInput>
           <TokenInputFirstRow>
             <span>To</span>
             <span>Balance: 0.0159</span>
           </TokenInputFirstRow>
           <TokenInputSecondRow>
-            <Input placeholder="0.0000" />
+            <Input
+              value={toAmount}
+              onChange={(e) => toHandler(e)}
+              placeholder="0.0000"
+            />
             <span>{to}</span>
           </TokenInputSecondRow>
         </TokenInput>
