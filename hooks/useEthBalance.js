@@ -6,6 +6,9 @@ export default function useEthBalance() {
   const { account, library } = useWeb3React()
   const { data: balance, mutate } = useSWR(['getBalance', account, 'latest'])
   useEffect(() => {
+    if (!account || !library) {
+      return
+    }
     // listen for changes on an Ethereum address
 
     console.log(`listening for blocks...`)

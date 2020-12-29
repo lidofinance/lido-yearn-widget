@@ -14,6 +14,9 @@ export default function useTokenBalance(token) {
     if (!tokenAddress) {
       return
     }
+    if (!account || !library) {
+      return
+    }
 
     // listen for changes on an Ethereum address
 
