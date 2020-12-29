@@ -8,7 +8,7 @@ import { SWRConfig } from 'swr'
 import { useWeb3React } from '@web3-react/core'
 import Header from './Header'
 import { useEagerConnect } from '../hooks/useEagerConnect'
-import { TOKENS_BY_NETWORK } from '../utils'
+import { TOKENS_BY_NETWORK, Networks } from '../utils'
 
 const GlobalStyle = createGlobalStyle`
   *,
@@ -50,6 +50,8 @@ function SwrReadyPage({ children }) {
       abi,
     ])
   }, [chainId])
+
+  const networkSupported = Object.values(Networks).indexOf(chainId) !== -1
   return (
     <SWRConfig value={{ fetcher: fetcher(library, new Map(ABIs)) }}>
       <PageContainer>
@@ -62,7 +64,11 @@ function SwrReadyPage({ children }) {
         </Head>
         <GlobalStyle />
         <Header />
-        {active ? children : 'Connect to Ethereum wallet'}
+        {!active && 'Connect to Ethereum wallet'}
+        {active &&
+          !networkSupported &&
+          `Network isn't supported, please, use Mainnet or Rinkeby`}
+        {active && networkSupported && children}
       </PageContainer>
     </SWRConfig>
   )
