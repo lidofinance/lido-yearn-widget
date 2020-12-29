@@ -1,13 +1,9 @@
-import { useEffect } from 'react'
 import styled from 'styled-components'
 import Link from 'next/link'
-import useSWR from 'swr'
-import { useWeb3React } from '@web3-react/core'
-import { Contract } from '@ethersproject/contracts'
 import { formatEther } from '@ethersproject/units'
 
-import ERC20ABI from '../abi/ERC20.abi.json'
-import { TOKENS_BY_NETWORK } from '../utils'
+import useEthBalance from '../hooks/useEthBalance'
+import useTokenBalance from '../hooks/useTokenBalance'
 
 import Card from './Card'
 
@@ -46,61 +42,11 @@ const Button = styled.div`
   }
 `
 
-function getTokenAddress(asset, chainId) {
-  const { address } =
-    TOKENS_BY_NETWORK[chainId].find(
-      ({ name }) => name.toLowerCase() === asset.toLowerCase()
-    ) || {}
-  return address
-}
-
 export default function ConverterCard({ tokenConfig }) {
   const { assetFrom, assetTo, logo } = tokenConfig
-  const { account, library, chainId } = useWeb3React()
 
-  const tokenAddress =
-    assetFrom !== 'ETH' && getTokenAddress(assetFrom, chainId)
-
-  const swrFetcherConfig =
-    assetFrom === 'ETH'
-      ? ['getBalance', account, 'latest']
-      : [tokenAddress, 'balanceOf', account]
-
-  const { data: balance, mutate } = useSWR(swrFetcherConfig)
-
-  useEffect(() => {
-    // listen for changes on an Ethereum address
-
-    if (assetFrom === 'ETH') {
-      console.log(`listening for blocks...`)
-
-      library.on('block', () => {
-        console.log('update balance...')
-        mutate(undefined, true)
-      })
-      // remove listener when the component is unmounted
-      return () => library.removeAllListeners('block')
-    }
-
-    const contract = new Contract(tokenAddress, ERC20ABI, library.getSigner())
-    const fromMe = contract.filters.Transfer(account, null)
-    library.on(fromMe, (from, to, amount, event) => {
-      console.log('Transfer|sent', { from, to, amount, event })
-      mutate(undefined, true)
-    })
-    const toMe = contract.filters.Transfer(null, account)
-    library.on(toMe, (from, to, amount, event) => {
-      console.log('Transfer|received', { from, to, amount, event })
-      mutate(undefined, true)
-    })
-    // remove listener when the component is unmounted
-    return () => {
-      library.removeAllListeners(toMe)
-      library.removeAllListeners(fromMe)
-    }
-
-    // trigger the effect only on component mount
-  }, [])
+  const balance =
+    assetFrom === 'ETH' ? useEthBalance() : useTokenBalance(assetFrom)
 
   return (
     <Card>
