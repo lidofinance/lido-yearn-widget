@@ -106,12 +106,17 @@ const ButtonTag = styled.button`
     background: ${(props) => (props.disabled ? '#F4F6F8' : '#1366BF')};
   }
 
-  &:first-child {
-    margin-right: 16px;
+  &:last-child {
+    margin-left: 16px;
+  }
+
+  &:first-child:last-child {
+    margin-left: 0px;
   }
 `
 
 export default function Converter({ to, from }) {
+  const needsApprove = from === 'StETH'
   return (
     <Center>
       <Panel>
@@ -137,7 +142,7 @@ export default function Converter({ to, from }) {
           </TokenInputSecondRow>
         </TokenInput>
         <ButtonContainer>
-          <ButtonTag>Approve</ButtonTag>
+          {needsApprove ? <ButtonTag>Approve</ButtonTag> : null }
           <ButtonTag disabled={true}>Swap</ButtonTag>
         </ButtonContainer>
       </Panel>
