@@ -1,3 +1,4 @@
+import { formatEther } from '@ethersproject/units'
 import ERC20ABI from '../abi/ERC20.abi.json'
 
 export const Networks = {
@@ -38,4 +39,8 @@ export const TOKENS_BY_NETWORK = {
       abi: ERC20ABI,
     },
   ],
+}
+
+export function formatEth(eth) {
+  return parseFloat(formatEther(eth || '0')).toPrecision(6)
 }

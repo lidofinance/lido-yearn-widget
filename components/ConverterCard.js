@@ -1,9 +1,9 @@
 import styled from 'styled-components'
 import Link from 'next/link'
-import { formatEther } from '@ethersproject/units'
 
 import useEthBalance from '../hooks/useEthBalance'
 import useTokenBalance from '../hooks/useTokenBalance'
+import { formatEth } from '../utils'
 
 import Card from './Card'
 
@@ -51,9 +51,7 @@ export default function ConverterCard({ tokenConfig }) {
   return (
     <Card>
       {logo}
-      <Balance>{`${parseFloat(formatEther(balance || '0')).toPrecision(
-        6
-      )}`}</Balance>
+      <Balance>{`${formatEth(balance)}`}</Balance>
       <Available>{assetFrom} Available</Available>
 
       <Link href={`/${assetFrom.toLowerCase()}-to-${assetTo.toLowerCase()}`}>
