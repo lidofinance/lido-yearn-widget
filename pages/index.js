@@ -60,7 +60,10 @@ export default function DefaultPage() {
       </Subtitle>
       <CardWrapper>
         {tokens.map((tokenConfig) => (
-          <ConverterCard tokenConfig={tokenConfig} />
+          <ConverterCard
+            tokenConfig={tokenConfig}
+            key={`${tokenConfig.assetFrom}-${tokenConfig.assetTo}-converter`}
+          />
         ))}
       </CardWrapper>
     </Page>
