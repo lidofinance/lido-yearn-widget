@@ -5,7 +5,7 @@ import Link from 'next/link'
 import WalletButton from './WalletButton'
 
 const HeaderContainer = styled.div`
-  width: 1120px;
+  width: 1040px;
   height: 100%;
   margin: 24px auto;
   display: flex;
@@ -16,8 +16,12 @@ const HeaderContainer = styled.div`
 `
 
 const DisclaimerContainer = styled.div`
+  position: absolute;
+  top: 2px;
+  width: 100%;
   display: flex;
-  flex: 1;
+  flex-direction: row;
+  align-items: center;
   justify-content: center;
 `
 
@@ -119,34 +123,34 @@ const Logo = () => (
 )
 
 const LogoContainer = styled.div`
-  position: absolute;
-  top: 0;
-  left: 0;
-  cursor: pointer;
 `
 
 const WalletContainer = styled.div`
-  position: absolute;
-  top: 0;
-  right: 0;
+
+`
+
+const HeaderWrapper = styled.div`
+  position: relative;
 `
 
 export default function Header() {
   return (
-    <HeaderContainer>
-      <LogoContainer>
-        <Link href="/">
-          <div>
-            <Logo />
-          </div>
-        </Link>
-      </LogoContainer>
+    <HeaderWrapper>
       <DisclaimerContainer>
         <Disclaimer>This project is in beta. Use at your own risk.</Disclaimer>
       </DisclaimerContainer>
-      <WalletContainer>
-        <WalletButton />
-      </WalletContainer>
-    </HeaderContainer>
+      <HeaderContainer>
+        <LogoContainer>
+          <Link href="/">
+            <div>
+              <Logo />
+            </div>
+          </Link>
+        </LogoContainer>
+        <WalletContainer>
+          <WalletButton />
+        </WalletContainer>
+      </HeaderContainer>
+    </HeaderWrapper>
   )
 }

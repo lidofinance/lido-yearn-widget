@@ -8,8 +8,8 @@ import useToken from '../hooks/useToken'
 import { blue, white, lightGray, denim } from './colors'
 
 const ConnectButton = styled.button`
-  margin-top: -8px;
-  padding: 12px 24px;
+  margin-top: -2px;
+  padding: 8px 24px;
   border-radius: 6px;
   background-color: ${blue};
   font-size: 16px;
@@ -25,21 +25,27 @@ const ConnectButton = styled.button`
 `
 
 const AddressBalancePanel = styled.div`
-  padding: 7px 8px;
+  margin-top: -2px;
+  padding: 4px 4px 4px 12px;
   border-radius: 16px;
   background-color: ${white};
+  color: #0B1637;
+  font-weight: 300;
 `
 
 const Address = styled.span`
   display: inline-flex;
   align-items: center;
   border-radius: 100px;
-  padding: 5px 8px;
+  padding: 4px 8px;
   background-color: ${lightGray};
+  color: #505A7A;
+  font-weight: 300;
+  font-size: 14px;
 `
 
 const Buffer = styled.span`
-  width: 8px;
+  width: 4px;
 `
 
 export default function WalletButton() {
