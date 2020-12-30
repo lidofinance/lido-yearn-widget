@@ -6,7 +6,7 @@ import styled from 'styled-components'
 import TxPopup from './TxPopup'
 
 import useTokenSwap, { TX_APPROVE, TX_SWAP } from '../hooks/useTokenSwap'
-import { TOKENS_BY_ID, NetworkConfigs, formatEth } from '../utils'
+import { TOKENS_BY_ID, ChainConfigs, formatEth } from '../utils'
 
 import { white } from './colors'
 
@@ -260,7 +260,7 @@ function renderPopup(txType, txHash, nameFrom, nameTo, displayAmountFrom, displa
   if (!txType) {
     return null
   }
-  const { etherscanAddress } = NetworkConfigs[chainId]
+  const { etherscanAddress } = ChainConfigs[chainId]
   return <TxPopup
     header={txHash ? 'Confirming...' : 'Signing...'}
     text={txType === TX_APPROVE

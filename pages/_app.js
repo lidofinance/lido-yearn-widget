@@ -10,7 +10,7 @@ import Header from '../components/Header'
 import WalletButton from '../components/WalletButton'
 import { useEagerConnect } from '../hooks/useEagerConnect'
 import { useInactiveListener } from '../hooks/useInactiveListener'
-import { VALID_TOKEN_IDS, getTokenConfig, Networks } from '../utils'
+import { VALID_TOKEN_IDS, getTokenConfig, Chains } from '../utils'
 
 const GlobalStyle = createGlobalStyle`
   *,
@@ -85,7 +85,7 @@ function SwrReadyPage({ children }) {
     })
   }, [chainId])
 
-  const networkSupported = Object.values(Networks).indexOf(chainId) !== -1
+  const chainSupported = Object.values(Chains).indexOf(chainId) !== -1
   return (
     <SWRConfig value={{ fetcher: fetcher(library, new Map(ABIs)) }}>
       <PageContainer>
@@ -98,15 +98,15 @@ function SwrReadyPage({ children }) {
         </Head>
         <GlobalStyle />
         <Header />
-        <NotConnected active={active} networkSupported={networkSupported} />
-        {active && networkSupported && children}
+        <NotConnected active={active} chainSupported={chainSupported} />
+        {active && chainSupported && children}
       </PageContainer>
     </SWRConfig>
   )
 }
 
-const NotConnected = ({active, networkSupported}) => {
-  if (!active && !networkSupported ) {
+const NotConnected = ({active, chainSupported}) => {
+  if (!active && !chainSupported) {
     return (
       <Wrapper>
         <Title>Yearn Lido St. Ether Vault</Title>

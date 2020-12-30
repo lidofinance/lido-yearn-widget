@@ -1,9 +1,9 @@
 import { InjectedConnector } from '@web3-react/injected-connector'
-import { Networks } from '../utils'
+import { Chains } from '../utils'
 
 export const injectedConnector = new InjectedConnector({
   supportedChainIds: [
-    Networks.MainNet, // Mainet
-    Networks.Rinkeby, // Rinkeby
+    Chains.MainNet, // Mainet
+    Chains.Rinkeby, // Rinkeby
   ],
 })

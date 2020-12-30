@@ -3,16 +3,16 @@ import { formatEther } from '@ethersproject/units'
 import ERC20ABI from '../abi/ERC20.abi.json'
 import VaultABI from '../abi/LidoVault.abi.json'
 
-export const Networks = {
+export const Chains = {
   MainNet: 1,
   Rinkeby: 4,
 }
 
-export const NetworkConfigs = {
-  [Networks.MainNet]: {
+export const ChainConfigs = {
+  [Chains.MainNet]: {
     etherscanAddress: 'https://etherscan.io'
   },
-  [Networks.Rinkeby]: {
+  [Chains.Rinkeby]: {
     etherscanAddress: 'https://rinkeby.etherscan.io'
   },
 }
@@ -41,12 +41,12 @@ export const TOKENS_BY_ID = {
   },
 }
 
-export const ADDRESSES_BY_NETWORK = {
-  [Networks.MainNet]: {
+export const ADDRESSES_BY_CHAIN = {
+  [Chains.MainNet]: {
     [TokenIds.STETH]: '0xae7ab96520de3a18e5e111b5eaab095312d7fe84',
     [TokenIds.YVSTETH]: '0x15a2B3CfaFd696e1C783FE99eed168b78a3A371e',
   },
-  [Networks.Rinkeby]: {
+  [Chains.Rinkeby]: {
     [TokenIds.STETH]: '0xba453033d328bfdd7799a4643611b616d80ddd97',
     [TokenIds.YVSTETH]: '0x01e68713da545f5dbead4c39a922892b93bffe66',
   },
@@ -56,9 +56,9 @@ export function formatEth(eth) {
   return parseFloat(formatEther(eth || '0')).toPrecision(6)
 }
 
-export function getTokenConfig(tokenId, networkId) {
+export function getTokenConfig(tokenId, chainId) {
   tokenId = tokenId.toLowerCase()
   const tokenConfig = TOKENS_BY_ID[tokenId]
-  const netAddresses = ADDRESSES_BY_NETWORK[networkId] || {}
-  return tokenConfig ? { ...tokenConfig, address: netAddresses[tokenId] } : null
+  const chainAddresses = ADDRESSES_BY_CHAIN[chainId] || {}
+  return tokenConfig ? { ...tokenConfig, address: chainAddresses[tokenId] } : null
 }
