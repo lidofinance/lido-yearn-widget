@@ -1,11 +1,9 @@
 import { BigNumber } from '@ethersproject/bignumber'
-import { useState, useMemo, useEffect } from 'react'
+import { useState } from 'react'
 import styled from 'styled-components'
-import { useWeb3React } from '@web3-react/core'
-import useSWR from 'swr'
 
-import useToken from '../hooks/useToken'
-import { TokenIds, TOKENS_BY_ID, formatEth } from '../utils'
+import useTokenSwap from '../hooks/useTokenSwap'
+import { TOKENS_BY_ID, formatEth } from '../utils'
 
 import { white } from './colors'
 
@@ -122,48 +120,32 @@ const ButtonTag = styled.button`
   }
 `
 
-const MAX_AMOUNT = BigNumber.from(2).pow(256).sub(1)
 const TEN_TO_18 = BigNumber.from(10).pow(18)
 
 const DISPLAY_PRECISION = 4
 const DISPLAY_MULT = Math.pow(10, DISPLAY_PRECISION)
 const PLACEHOLDER = (0).toFixed(DISPLAY_PRECISION)
 
+
 export default function Converter({ to: assetTo, from: assetFrom }) {
-  const isSubmit = assetFrom === 'eth'
-  const isDeposit = assetFrom === TokenIds.STETH
-
-  const tokenInfoFrom = isSubmit ? { id: 'eth', name: 'ETH' } : TOKENS_BY_ID[assetFrom]
-  const tokenInfoTo = TOKENS_BY_ID[assetTo]
-
-  const tokenFrom = useToken(assetFrom)
-  const tokenTo = useToken(assetTo)
-  const balanceFrom = tokenFrom.balance
-
-  const vault = (isSubmit || isDeposit) ? tokenTo.contract : tokenFrom.contract
-
-  // how many stETH wei one gets per 1e18 vystETH wei
-  // 1e18 yvstETH = stEthPerYvstEth stETH
-  // X stETH = (X * 1e18 / stEthPerYvstEth) vystETH
-  // Y yvstETH = (Y * stEthPerYvstEth / 1e18) stETH
-  const stEthPerYvstEth = useSWR([vault.address, 'pricePerShare']).data
-
-  // FIXME: don't call the hook conditionally
-  const approvedAmount = isDeposit
-    ? useTokenAllowance(tokenFrom.contract, vault.address)
-    : MAX_AMOUNT
-
-  const isFetching = balanceFrom === undefined || approvedAmount === undefined
-  const [isTransacting, setIsTransacting] = useState(false)
-  const [txHash, setTxHash] = useState(null)
-
   const [fromDisplayAmount, setFromDisplayAmount] = useState('')
-  const [toDisplayAmount, setToDisplayAmount] = useState('')
-
   const [fromAmount, setFromAmount] = useState(BigNumber.from(0))
+
+  const [toDisplayAmount, setToDisplayAmount] = useState('')
   const [toAmount, setToAmount] = useState(BigNumber.from(0))
 
-  const isApprovalSufficient = !isFetching && approvedAmount.gte(fromAmount)
+  const {
+    isSubmit,
+    isDeposit,
+    balanceFrom,
+    balanceTo,
+    isApprovalSufficient,
+    stEthPerYvstEth,
+    isFetching,
+    isTransacting,
+    txHash,
+    doApprove,
+  } = useTokenSwap(assetFrom, assetTo, fromAmount)
 
   const makeAmtChangeListener = ({
     setSrcAmount, setSrcDisplayAmount,
@@ -203,18 +185,6 @@ export default function Converter({ to: assetTo, from: assetFrom }) {
   const approveDisabled = isFetching || isTransacting || isApprovalSufficient
   const swapDisabled = isFetching || isTransacting || !isApprovalSufficient
 
-  const doApprove = async () => {
-    try {
-      setIsTransacting(true)
-      const tx = await tokenFrom.contract.approve(vault.address, MAX_AMOUNT)
-      setTxHash(tx.hash)
-      await tx.wait(1)
-    } finally {
-      setIsTransacting(false)
-      setTxHash(null)
-    }
-  }
-
   // TODO: display a blocking popup
   // isTransacting == true, txHash == null => "Please sign the transaction"
   // isTransacting == true, txHash != null => "Waiting for inclusion in a block, hash: {txHash}"
@@ -233,14 +203,14 @@ export default function Converter({ to: assetTo, from: assetFrom }) {
               onChange={(e) => onFromAmtChanged(e)}
               placeholder={PLACEHOLDER}
             />
-            <span>{tokenInfoFrom.name}</span>
+            <span>{isSubmit ? 'eth' : TOKENS_BY_ID[assetFrom].name}</span>
           </TokenInputSecondRow>
         </TokenInput>
         <PricePerShare>Rate: {formatEth(stEthPerYvstEth)}</PricePerShare>
         <TokenInput>
           <TokenInputFirstRow>
             <span>To</span>
-            <span>Balance: {formatEth(tokenTo.balance)}</span>
+            <span>Balance: {formatEth(balanceTo)}</span>
           </TokenInputFirstRow>
           <TokenInputSecondRow>
             <Input
@@ -248,7 +218,7 @@ export default function Converter({ to: assetTo, from: assetFrom }) {
               onChange={(e) => onToAmtChanged(e)}
               placeholder={PLACEHOLDER}
             />
-            <span>{tokenInfoTo.name}</span>
+            <span>{TOKENS_BY_ID[assetTo].name}</span>
           </TokenInputSecondRow>
         </TokenInput>
         <ButtonContainer>
@@ -260,33 +230,6 @@ export default function Converter({ to: assetTo, from: assetFrom }) {
       </Panel>
     </Center>
   )
-}
-
-function useTokenAllowance(contract, spenderAddress) {
-  const { account, library } = useWeb3React()
-  if (!account || !library || !contract) {
-    return undefined
-  }
-
-  const { data: allowance, mutate } = useSWR([contract.address, 'allowance', account, spenderAddress])
-
-  useEffect(() => {
-    const approvalFilter = contract.filters.Approval(account, spenderAddress)
-
-    const onApproval = (owner, spender, amount) => {
-      console.log('Approval', { owner, spender, amount })
-      mutate(undefined, true)
-    }
-
-    library.on(approvalFilter, onApproval)
-
-    return () => {
-      library.off(approvalFilter, onApproval)
-    }
-
-  }, [account, spenderAddress])
-
-  return allowance
 }
 
 function parseAmount(amount) {
