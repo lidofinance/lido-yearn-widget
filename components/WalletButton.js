@@ -1,5 +1,5 @@
 import styled from 'styled-components'
-
+import Jazzicon, { jsNumberForAddress } from 'react-jazzicon'
 import { useWeb3React } from '@web3-react/core'
 
 import { injectedConnector } from '../connectors'
@@ -27,9 +27,15 @@ const AddressBalancePanel = styled.div`
 `
 
 const Address = styled.span`
+  display: inline-flex;
+  align-items: center;
   border-radius: 100px;
   padding: 5px 8px;
   background-color: ${lightGray};
+`
+
+const Buffer = styled.span`
+  width: 8px;
 `
 
 export default function WalletButton() {
@@ -47,7 +53,11 @@ export default function WalletButton() {
   return (
     <AddressBalancePanel>
       {formatEth(balance)} <b>ETH</b>{' '}
-      <Address>{formatAddress(account)}</Address>
+      <Address>
+        {formatAddress(account)}
+        <Buffer />
+        <Jazzicon diameter={24} seed={jsNumberForAddress(account)} />
+      </Address>
     </AddressBalancePanel>
   )
 }
