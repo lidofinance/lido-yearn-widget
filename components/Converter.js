@@ -196,9 +196,15 @@ export default function Converter({ to: assetTo, from: assetFrom }) {
   const nameFrom = isSubmit ? 'ETH' : TOKENS_BY_ID[assetFrom].name
   const nameTo = TOKENS_BY_ID[assetTo].name
 
+  const isReady = isFetching || !!txType
   const amountsAreNonZero = fromAmount.gt(0) && toAmount.gt(0)
-  const approveDisabled = isFetching || !!txType || isApprovalSufficient
-  const swapDisabled = isFetching || !!txType || !isApprovalSufficient || !amountsAreNonZero
+  const balanceSufficient = balanceFrom !== undefined && balanceFrom.gte(fromAmount)
+  const approveDisabled = isReady || isApprovalSufficient
+  const swapDisabled = isReady || !isApprovalSufficient || !amountsAreNonZero || !balanceSufficient
+
+  const swapDisabledReason = swapDisabled
+    ? getSwapDisabledReason(isApprovalSufficient, amountsAreNonZero, balanceSufficient)
+    : null
 
   return (
     <Center>
@@ -237,7 +243,12 @@ export default function Converter({ to: assetTo, from: assetFrom }) {
           {isDeposit
             ? <ButtonTag disabled={approveDisabled} onClick={doApprove}>Approve</ButtonTag>
             : null}
-          <ButtonTag disabled={swapDisabled} onClick={doSwap}>Swap</ButtonTag>
+          <ButtonTag
+            disabled={swapDisabled}
+            title={swapDisabledReason}
+            onClick={doSwap}>
+            Swap
+          </ButtonTag>
         </ButtonContainer>
       </Panel>
     </Center>
@@ -269,6 +280,18 @@ function renderTxAction(txHash, etherscanAddress) {
       See on Etherscan
     </EtherscanLink>
   </>
+}
+
+function getSwapDisabledReason(isApprovalSufficient, amountsAreNonZero, balanceSufficient) {
+  if (!isApprovalSufficient) {
+    return `Please submit an approval transaction first`
+  }
+  if (!amountsAreNonZero) {
+    return `Cannot convert from/to zero amount`
+  }
+  if (!balanceSufficient) {
+    return `Balance is insufficient`
+  }
 }
 
 function parseAmount(amount) {
