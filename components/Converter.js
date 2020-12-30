@@ -193,8 +193,9 @@ export default function Converter({ to: assetTo, from: assetFrom }) {
   const nameFrom = isSubmit ? 'ETH' : TOKENS_BY_ID[assetFrom].name
   const nameTo = TOKENS_BY_ID[assetTo].name
 
+  const amountsAreNonZero = fromAmount.gt(0) && toAmount.gt(0)
   const approveDisabled = isFetching || !!txType || isApprovalSufficient
-  const swapDisabled = isFetching || !!txType || !isApprovalSufficient
+  const swapDisabled = isFetching || !!txType || !isApprovalSufficient || !amountsAreNonZero
 
   return (
     <Center>
