@@ -8,6 +8,15 @@ export const Networks = {
   Rinkeby: 4,
 }
 
+export const NetworkConfigs = {
+  [Networks.MainNet]: {
+    etherscanAddress: 'https://etherscan.io'
+  },
+  [Networks.Rinkeby]: {
+    etherscanAddress: 'https://rinkeby.etherscan.io'
+  },
+}
+
 export const TokenIds = {
   STETH: 'steth',
   YVSTETH: 'yvsteth',

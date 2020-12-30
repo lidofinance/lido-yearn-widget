@@ -1,11 +1,12 @@
 import { BigNumber } from '@ethersproject/bignumber'
 import { useState } from 'react'
+import { useWeb3React } from '@web3-react/core'
 import styled from 'styled-components'
 
 import TxPopup from './TxPopup'
 
-import useTokenSwap from '../hooks/useTokenSwap'
-import { TOKENS_BY_ID, formatEth } from '../utils'
+import useTokenSwap, { TX_APPROVE, TX_SWAP } from '../hooks/useTokenSwap'
+import { TOKENS_BY_ID, NetworkConfigs, formatEth } from '../utils'
 
 import { white } from './colors'
 
@@ -122,6 +123,10 @@ const ButtonTag = styled.button`
   }
 `
 
+const EtherscanLink = styled.a`
+  display: block;
+`
+
 const TEN_TO_18 = BigNumber.from(10).pow(18)
 
 const DISPLAY_PRECISION = 4
@@ -144,7 +149,7 @@ export default function Converter({ to: assetTo, from: assetFrom }) {
     isApprovalSufficient,
     stEthPerYvstEth,
     isFetching,
-    isTransacting,
+    txType,
     txHash,
     doApprove,
     doSwap,
@@ -185,20 +190,15 @@ export default function Converter({ to: assetTo, from: assetFrom }) {
     isToYvstEth: !(isSubmit || isDeposit)
   })
 
-  const approveDisabled = isFetching || isTransacting || isApprovalSufficient
-  const swapDisabled = isFetching || isTransacting || !isApprovalSufficient
+  const nameFrom = isSubmit ? 'ETH' : TOKENS_BY_ID[assetFrom].name
+  const nameTo = TOKENS_BY_ID[assetTo].name
 
-  // TODO: display a blocking popup
-  // isTransacting == true, txHash == null => "Please sign the transaction"
-  // isTransacting == true, txHash != null => "Waiting for inclusion in a block, hash: {txHash}"
+  const approveDisabled = isFetching || !!txType || isApprovalSufficient
+  const swapDisabled = isFetching || !!txType || !isApprovalSufficient
 
   return (
     <Center>
-      <TxPopup
-        header='Please sign tx'
-        text='Swap 0.01 stETH to 0.23 yvstETH'
-        action='Confirm this transaction in your wallet'
-      />
+      {renderPopup(txType, txHash, nameFrom, nameTo, fromDisplayAmount, toDisplayAmount)}
       <Panel>
         <TokenInput>
           <TokenInputFirstRow>
@@ -211,7 +211,7 @@ export default function Converter({ to: assetTo, from: assetFrom }) {
               onChange={(e) => onFromAmtChanged(e)}
               placeholder={PLACEHOLDER}
             />
-            <span>{isSubmit ? 'ETH' : TOKENS_BY_ID[assetFrom].name}</span>
+            <span>{nameFrom}</span>
           </TokenInputSecondRow>
         </TokenInput>
         <PricePerShare>Rate: {formatEth(stEthPerYvstEth)}</PricePerShare>
@@ -226,7 +226,7 @@ export default function Converter({ to: assetTo, from: assetFrom }) {
               onChange={(e) => onToAmtChanged(e)}
               placeholder={PLACEHOLDER}
             />
-            <span>{TOKENS_BY_ID[assetTo].name}</span>
+            <span>{nameTo}</span>
           </TokenInputSecondRow>
         </TokenInput>
         <ButtonContainer>
@@ -238,6 +238,33 @@ export default function Converter({ to: assetTo, from: assetFrom }) {
       </Panel>
     </Center>
   )
+}
+
+function renderPopup(txType, txHash, nameFrom, nameTo, displayAmountFrom, displayAmountTo) {
+  const { chainId } = useWeb3React()
+  if (!txType) {
+    return null
+  }
+  const { etherscanAddress } = NetworkConfigs[chainId]
+  return <TxPopup
+    header={txHash ? 'Confirming...' : 'Signing...'}
+    text={txType === TX_APPROVE
+      ? `Approve Yearn St. Ether Vault to spend your ${nameFrom} tokens`
+      : `Swap ${displayAmountFrom} ${nameFrom} to ${displayAmountTo} ${nameTo}`}
+    action={renderTxAction(txHash, etherscanAddress)}
+  />
+}
+
+function renderTxAction(txHash, etherscanAddress) {
+  if (!txHash) {
+    return <span>Please confirm the transaction in your wallet</span>
+  }
+  return <>
+    <span>Waiting until the transaction is included in a block.</span>
+    <EtherscanLink href={`${etherscanAddress}/tx/${txHash}`} target="_blank">
+      See on Etherscan
+    </EtherscanLink>
+  </>
 }
 
 function parseAmount(amount) {

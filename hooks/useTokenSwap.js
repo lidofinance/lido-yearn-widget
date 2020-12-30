@@ -10,6 +10,9 @@ import useToken from './useToken'
 const MAX_AMOUNT = BigNumber.from(2).pow(256).sub(1)
 const NUM_TX_CONFIRMATIONS = 1
 
+export const TX_APPROVE = 'approve'
+export const TX_SWAP = 'swap'
+
 
 export default function useTokenSwap(assetFrom, assetTo, amountFrom) {
   const isSubmit = assetFrom === 'eth'
@@ -31,15 +34,15 @@ export default function useTokenSwap(assetFrom, assetTo, amountFrom) {
     : MAX_AMOUNT
 
   const isFetching = tokenFrom.balance === undefined || approvedAmount === undefined
-  const [isTransacting, setIsTransacting] = useState(false)
+  const [txType, setTxType] = useState(null)
   const [txHash, setTxHash] = useState(null)
 
-  const updateTransacting = (newIsTransacting) => {
-    if (isTransacting && !newIsTransacting) {
+  const updateTx = (newTxType) => {
+    if (txType && !newTxType) {
       tokenFrom.invalidateBalance()
       tokenTo.invalidateBalance()
     }
-    setIsTransacting(newIsTransacting)
+    setTxType(newTxType)
   }
 
   const isApprovalSufficient = !isFetching && approvedAmount.gte(amountFrom)
@@ -58,10 +61,10 @@ export default function useTokenSwap(assetFrom, assetTo, amountFrom) {
     isApprovalSufficient,
     stEthPerYvstEth,
     isFetching,
-    isTransacting,
+    txType,
     txHash,
-    doApprove: wrapTx(updateTransacting, setTxHash, approveFn, NUM_TX_CONFIRMATIONS),
-    doSwap: wrapTx(updateTransacting, setTxHash, swapFn, NUM_TX_CONFIRMATIONS),
+    doApprove: wrapTx(TX_APPROVE, approveFn, updateTx, setTxHash, NUM_TX_CONFIRMATIONS),
+    doSwap: wrapTx(TX_SWAP, swapFn, updateTx, setTxHash, NUM_TX_CONFIRMATIONS),
   }
 }
 
@@ -79,15 +82,15 @@ function makeSwapFn(isDeposit, isSubmit, fromAmount, vault) {
   return () => vault['withdraw(uint256)'](fromAmount)
 }
 
-function wrapTx(setIsTransacting, setTxHash, txFn, numConfirmations = 1) {
+function wrapTx(txType, txFn, setTxType, setTxHash, numConfirmations) {
   return async () => {
     try {
-      setIsTransacting(true)
+      setTxType(txType)
       const tx = await txFn()
       setTxHash(tx.hash)
       await tx.wait(numConfirmations)
     } finally {
-      setIsTransacting(false)
+      setTxType(null)
       setTxHash(null)
     }
   }
