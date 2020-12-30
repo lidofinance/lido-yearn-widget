@@ -3,6 +3,8 @@ import styled from 'styled-components'
 import Page from '../components/Page'
 import Converter from '../components/Converter'
 
+import { TokenIds } from '../utils'
+
 const Title = styled.div`
   margin: 0 auto;
   text-align: center;
@@ -26,9 +28,9 @@ export default function StETHToYvStETH() {
     <Page>
       <Title>stETH to yvstETH</Title>
       <Subtitle>
-        First, approve Yyear Vault contract to spent StETH tokens, than swap.
+        First, approve Yyear Vault contract to spend stETH tokens, than swap.
       </Subtitle>
-      <Converter from="StETH" to="YvStETH" />
+      <Converter from={TokenIds.STETH} to={TokenIds.YVSTETH} />
     </Page>
   )
 }

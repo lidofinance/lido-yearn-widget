@@ -3,6 +3,8 @@ import styled from 'styled-components'
 
 import { white } from './colors'
 
+import { TokenIds, TOKENS_BY_ID } from '../utils'
+
 const Center = styled.div`
   margin-top: 40px;
   display: flex;
@@ -116,8 +118,10 @@ const ButtonTag = styled.button`
   }
 `
 
-export default function Converter({ to, from }) {
-  const needsApprove = from === 'StETH'
+export default function Converter({ to: assetTo, from: assetFrom }) {
+  const isFromETH = assetFrom === 'eth'
+  const tokenFrom = isFromETH ? { id: 'eth', name: 'ETH' } : TOKENS_BY_ID[assetFrom]
+  const tokenTo = TOKENS_BY_ID[assetTo]
 
   const [fromAmount, setFromAmount] = useState('')
   const [toAmount, setToAmount] = useState('')
@@ -152,7 +156,7 @@ export default function Converter({ to, from }) {
               onChange={(e) => fromHandler(e)}
               placeholder="0.0000"
             />
-            <span>{from}</span>
+            <span>{tokenFrom.name}</span>
           </TokenInputSecondRow>
         </TokenInput>
         <PricePerShare>Price per share: 1.1201</PricePerShare>
@@ -167,11 +171,11 @@ export default function Converter({ to, from }) {
               onChange={(e) => toHandler(e)}
               placeholder="0.0000"
             />
-            <span>{to}</span>
+            <span>{tokenTo.name}</span>
           </TokenInputSecondRow>
         </TokenInput>
         <ButtonContainer>
-          {needsApprove ? <ButtonTag>Approve</ButtonTag> : null }
+          {tokenFrom.needsApprove ? <ButtonTag>Approve</ButtonTag> : null }
           <ButtonTag disabled={true}>Swap</ButtonTag>
         </ButtonContainer>
       </Panel>

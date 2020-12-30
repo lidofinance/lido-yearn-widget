@@ -8,7 +8,7 @@ import { SWRConfig } from 'swr'
 import { useWeb3React } from '@web3-react/core'
 import Header from './Header'
 import { useEagerConnect } from '../hooks/useEagerConnect'
-import { TOKENS_BY_NETWORK, Networks } from '../utils'
+import { VALID_TOKEN_IDS, getTokenConfig, Networks } from '../utils'
 
 const GlobalStyle = createGlobalStyle`
   *,
@@ -45,10 +45,10 @@ function SwrReadyPage({ children }) {
   useEagerConnect()
 
   const ABIs = useMemo(() => {
-    return (TOKENS_BY_NETWORK[chainId] || []).map(({ address, abi }) => [
-      address,
-      abi,
-    ])
+    return VALID_TOKEN_IDS.map(tokenId => {
+      const {address, abi} = getTokenConfig(tokenId, chainId)
+      return [address, abi]
+    })
   }, [chainId])
 
   const networkSupported = Object.values(Networks).indexOf(chainId) !== -1

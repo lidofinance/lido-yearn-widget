@@ -6,41 +6,50 @@ export const Networks = {
   Rinkeby: 4,
 }
 
-export const TOKENS_BY_NETWORK = {
-  [Networks.MainNet]: [
-    {
-      address: '0xae7ab96520de3a18e5e111b5eaab095312d7fe84',
-      name: 'stETH',
-      symbol: 'stETH',
-      decimals: 18,
-      abi: ERC20ABI,
-    },
-    {
-      address: '0x15a2B3CfaFd696e1C783FE99eed168b78a3A371e',
-      symbol: 'yvstETH',
-      name: 'yvstETH',
-      decimals: 18,
-      abi: ERC20ABI,
-    },
-  ],
-  [Networks.Rinkeby]: [
-    {
-      address: '0xba453033d328bfdd7799a4643611b616d80ddd97',
-      name: 'stETH',
-      symbol: 'stETH',
-      decimals: 18,
-      abi: ERC20ABI,
-    },
-    {
-      address: '0x01e68713da545f5dbead4c39a922892b93bffe66',
-      symbol: 'yvstETH',
-      name: 'yvstETH',
-      decimals: 18,
-      abi: ERC20ABI,
-    },
-  ],
+export const TokenIds = {
+  STETH: 'steth',
+  YVSTETH: 'yvsteth',
+}
+
+export const VALID_TOKEN_IDS = Object.entries(TokenIds).map(e => e[1])
+
+export const TOKENS_BY_ID = {
+  [TokenIds.STETH]: {
+    id: 'steth',
+    name: 'stETH',
+    symbol: 'stETH',
+    decimals: 18,
+    needsApprove: true,
+    abi: ERC20ABI,
+  },
+  [TokenIds.YVSTETH]: {
+    id: 'yvsteth',
+    symbol: 'yvstETH',
+    name: 'yvstETH',
+    decimals: 18,
+    needsApprove: false,
+    abi: ERC20ABI,
+  },
+}
+
+export const ADDRESSES_BY_NETWORK = {
+  [Networks.MainNet]: {
+    [TokenIds.STETH]: '0xae7ab96520de3a18e5e111b5eaab095312d7fe84',
+    [TokenIds.YVSTETH]: '0x15a2B3CfaFd696e1C783FE99eed168b78a3A371e',
+  },
+  [Networks.Rinkeby]: {
+    [TokenIds.STETH]: '0xba453033d328bfdd7799a4643611b616d80ddd97',
+    [TokenIds.YVSTETH]: '0x01e68713da545f5dbead4c39a922892b93bffe66',
+  },
 }
 
 export function formatEth(eth) {
   return parseFloat(formatEther(eth || '0')).toPrecision(6)
+}
+
+export function getTokenConfig(tokenId, networkId) {
+  tokenId = tokenId.toLowerCase()
+  const tokenConfig = TOKENS_BY_ID[tokenId]
+  const netAddresses = ADDRESSES_BY_NETWORK[networkId] || {}
+  return tokenConfig ? { ...tokenConfig, address: netAddresses[tokenId] } : null
 }

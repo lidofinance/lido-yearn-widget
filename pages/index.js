@@ -7,6 +7,8 @@ import Eth from '../components/token-logos/Eth'
 import Lido from '../components/token-logos/Lido'
 import YearnLido from '../components/token-logos/YearnLido'
 
+import { TokenIds } from '../utils'
+
 const Title = styled.div`
   margin: 0 auto;
   text-align: center;
@@ -32,20 +34,20 @@ const CardWrapper = styled.div`
   justify-content: center;
 `
 
-const tokens = [
+const conversions = [
   {
-    assetFrom: 'StETH',
-    assetTo: 'YvStETH',
+    assetFrom: TokenIds.STETH,
+    assetTo: TokenIds.YVSTETH,
     logo: <Lido />,
   },
   {
-    assetFrom: 'YvStETH',
-    assetTo: 'StETH',
+    assetFrom: TokenIds.YVSTETH,
+    assetTo: TokenIds.STETH,
     logo: <YearnLido />,
   },
   {
-    assetFrom: 'ETH',
-    assetTo: 'YvStETH',
+    assetFrom: 'eth',
+    assetTo: TokenIds.YVSTETH,
     logo: <Eth />,
   },
 ]
@@ -59,7 +61,7 @@ export default function DefaultPage() {
         balances which can change outside transfers. Built for DeFi.
       </Subtitle>
       <CardWrapper>
-        {tokens.map((tokenConfig) => (
+        {conversions.map((tokenConfig) => (
           <ConverterCard
             tokenConfig={tokenConfig}
             key={`${tokenConfig.assetFrom}-${tokenConfig.assetTo}-converter`}

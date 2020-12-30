@@ -3,7 +3,7 @@ import Link from 'next/link'
 
 import useEthBalance from '../hooks/useEthBalance'
 import useTokenBalance from '../hooks/useTokenBalance'
-import { formatEth } from '../utils'
+import { TOKENS_BY_ID, formatEth } from '../utils'
 
 import Card from './Card'
 
@@ -45,17 +45,20 @@ const Button = styled.div`
 export default function ConverterCard({ tokenConfig }) {
   const { assetFrom, assetTo, logo } = tokenConfig
 
-  const balance =
-    assetFrom === 'ETH' ? useEthBalance() : useTokenBalance(assetFrom)
+  const isFromETH = assetFrom === 'eth'
+  const balance = isFromETH ? useEthBalance() : useTokenBalance(assetFrom)
+
+  const tokenFrom = isFromETH ? { id: 'eth', name: 'ETH' } : TOKENS_BY_ID[assetFrom]
+  const tokenTo = TOKENS_BY_ID[assetTo]
 
   return (
     <Card>
       {logo}
       <Balance>{`${formatEth(balance)}`}</Balance>
-      <Available>{assetFrom} Available</Available>
+      <Available>{tokenFrom.name} Available</Available>
 
-      <Link href={`/${assetFrom.toLowerCase()}-to-${assetTo.toLowerCase()}`}>
-        <Button>Convert to {assetTo}</Button>
+      <Link href={`/${tokenFrom.id}-to-${tokenTo.id}`}>
+        <Button>Convert to {tokenTo.name}</Button>
       </Link>
     </Card>
   )

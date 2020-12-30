@@ -13,12 +13,15 @@ export default function useEthBalance() {
 
     console.log(`listening for blocks...`)
 
-    library.on('block', () => {
+    const onBlock = () => {
       console.log('update balance...')
       mutate(undefined, true)
-    })
+    }
+
+    library.on('block', onBlock)
+
     // remove listener when the component is unmounted
-    return () => library.removeAllListeners('block')
+    return () => library.off('block', onBlock)
 
     // trigger the effect only on component mount
   }, [])
