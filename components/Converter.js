@@ -1,9 +1,13 @@
-import {useState} from 'react'
+import { BigNumber } from '@ethersproject/bignumber'
+import { useState, useMemo, useEffect } from 'react'
 import styled from 'styled-components'
+import { useWeb3React } from '@web3-react/core'
+import useSWR from 'swr'
+
+import useToken from '../hooks/useToken'
+import { TokenIds, TOKENS_BY_ID, formatEth } from '../utils'
 
 import { white } from './colors'
-
-import { TokenIds, TOKENS_BY_ID } from '../utils'
 
 const Center = styled.div`
   margin-top: 40px;
@@ -118,29 +122,81 @@ const ButtonTag = styled.button`
   }
 `
 
+const MAX_AMOUNT = BigNumber.from('0xffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff')
+const TEN_TO_18 = BigNumber.from(10).pow(18)
+
+const DISPLAY_PRECISION = 4
+const DISPLAY_MULT = Math.pow(10, DISPLAY_PRECISION)
+const PLACEHOLDER = (0).toFixed(DISPLAY_PRECISION)
+
 export default function Converter({ to: assetTo, from: assetFrom }) {
-  const isFromETH = assetFrom === 'eth'
-  const tokenFrom = isFromETH ? { id: 'eth', name: 'ETH' } : TOKENS_BY_ID[assetFrom]
-  const tokenTo = TOKENS_BY_ID[assetTo]
+  const isSubmit = assetFrom === 'eth'
+  const isDeposit = assetFrom === TokenIds.STETH
 
-  const [fromAmount, setFromAmount] = useState('')
-  const [toAmount, setToAmount] = useState('')
+  const tokenInfoFrom = isSubmit ? { id: 'eth', name: 'ETH' } : TOKENS_BY_ID[assetFrom]
+  const tokenInfoTo = TOKENS_BY_ID[assetTo]
 
-  function fromHandler(e) {
-    setFromAmount(e.target.value)
-    let value = parseFloat(e.target.value)
-    if (!isNaN(value)) {
-      setToAmount((value / 1.1201).toFixed(4))
+  const tokenFrom = useToken(assetFrom)
+  const tokenTo = useToken(assetTo)
+  const balanceFrom = tokenFrom.balance
+
+  const vault = (isSubmit || isDeposit) ? tokenTo.contract : tokenFrom.contract
+
+  // how many stETH wei one gets per 1e18 vystETH wei
+  // 1e18 yvstETH = stEthPerYvstEth stETH
+  // X stETH = (X * 1e18 / stEthPerYvstEth) vystETH
+  // Y yvstETH = (Y * stEthPerYvstEth / 1e18) stETH
+  const stEthPerYvstEth = useSWR([vault.address, 'pricePerShare']).data
+
+  // FIXME: don't call the hook conditionally
+  const approvedAmount = isDeposit
+    ? useTokenAllowance(tokenFrom.contract, vault.address)
+    : MAX_AMOUNT
+
+  const isFetching = balanceFrom === undefined || approvedAmount === undefined
+
+  const [fromDisplayAmount, setFromDisplayAmount] = useState('')
+  const [toDisplayAmount, setToDisplayAmount] = useState('')
+
+  const [fromAmount, setFromAmount] = useState(BigNumber.from(0))
+  const [toAmount, setToAmount] = useState(BigNumber.from(0))
+
+  const isApprovalSufficient = !isFetching && approvedAmount.gte(fromAmount)
+
+  const makeAmtChangeListener = ({
+    setSrcAmount, setSrcDisplayAmount,
+    setDstAmount, setDstDisplayAmount,
+    isToYvstEth
+  }) => (e) => {
+    setSrcDisplayAmount(e.target.value)
+    const value = Number(e.target.value)
+    if (isNaN(value) || isFetching) {
+      return
     }
+    const srcAmount = parseAmount(value)
+    const dstAmount = isToYvstEth
+      ? srcAmount.mul(TEN_TO_18).div(stEthPerYvstEth)
+      : srcAmount.mul(stEthPerYvstEth).div(TEN_TO_18)
+    setSrcAmount(srcAmount)
+    setDstAmount(dstAmount)
+    setDstDisplayAmount(formatAmount(dstAmount))
   }
 
-  function toHandler(e) {
-    setToAmount(e.target.value)
-    let value = parseFloat(e.target.value)
-    if (!isNaN(value)) {
-      setFromAmount((value * 1.1201).toFixed(4))
-    }
-  }
+  const onFromAmtChanged = makeAmtChangeListener({
+    setSrcAmount: setFromAmount,
+    setSrcDisplayAmount: setFromDisplayAmount,
+    setDstAmount: setToAmount,
+    setDstDisplayAmount: setToDisplayAmount,
+    isToYvstEth: isSubmit || isDeposit
+  })
+
+  const onToAmtChanged = makeAmtChangeListener({
+    setSrcAmount: setToAmount,
+    setSrcDisplayAmount: setToDisplayAmount,
+    setDstAmount: setFromAmount,
+    setDstDisplayAmount: setFromDisplayAmount,
+    isToYvstEth: !(isSubmit || isDeposit)
+  })
 
   return (
     <Center>
@@ -148,37 +204,72 @@ export default function Converter({ to: assetTo, from: assetFrom }) {
         <TokenInput>
           <TokenInputFirstRow>
             <span>From</span>
-            <span>Balance: 23.0345</span>
+            <span>Balance: {formatEth(balanceFrom)}</span>
           </TokenInputFirstRow>
           <TokenInputSecondRow>
             <Input
-              value={fromAmount}
-              onChange={(e) => fromHandler(e)}
-              placeholder="0.0000"
+              value={fromDisplayAmount}
+              onChange={(e) => onFromAmtChanged(e)}
+              placeholder={PLACEHOLDER}
             />
-            <span>{tokenFrom.name}</span>
+            <span>{tokenInfoFrom.name}</span>
           </TokenInputSecondRow>
         </TokenInput>
-        <PricePerShare>Price per share: 1.1201</PricePerShare>
+        <PricePerShare>Rate: {formatEth(stEthPerYvstEth)}</PricePerShare>
         <TokenInput>
           <TokenInputFirstRow>
             <span>To</span>
-            <span>Balance: 0.0159</span>
+            <span>Balance: {formatEth(tokenTo.balance)}</span>
           </TokenInputFirstRow>
           <TokenInputSecondRow>
             <Input
-              value={toAmount}
-              onChange={(e) => toHandler(e)}
-              placeholder="0.0000"
+              value={toDisplayAmount}
+              onChange={(e) => onToAmtChanged(e)}
+              placeholder={PLACEHOLDER}
             />
-            <span>{tokenTo.name}</span>
+            <span>{tokenInfoTo.name}</span>
           </TokenInputSecondRow>
         </TokenInput>
         <ButtonContainer>
-          {tokenFrom.needsApprove ? <ButtonTag>Approve</ButtonTag> : null }
-          <ButtonTag disabled={true}>Swap</ButtonTag>
+          {isDeposit ? <ButtonTag disabled={isFetching || isApprovalSufficient}>Approve</ButtonTag> : null }
+          <ButtonTag disabled={isFetching || !isApprovalSufficient}>Swap</ButtonTag>
         </ButtonContainer>
       </Panel>
     </Center>
   )
+}
+
+function useTokenAllowance(contract, spenderAddress) {
+  const { account, library } = useWeb3React()
+  if (!account || !library || !contract) {
+    return undefined
+  }
+
+  const { data: allowance, mutate } = useSWR([contract.address, 'allowance', account, spenderAddress])
+
+  useEffect(() => {
+    const approvalFilter = contract.filters.Approval(account, spenderAddress)
+
+    const onApproval = (owner, spender, amount) => {
+      console.log('Approval', { owner, spender, amount })
+      mutate(undefined, true)
+    }
+
+    library.on(approvalFilter, onApproval)
+
+    return () => {
+      library.off(approvalFilter, onApproval)
+    }
+
+  }, [account, spenderAddress])
+
+  return allowance
+}
+
+function parseAmount(amount) {
+  return TEN_TO_18.mul(Math.floor(Number(amount) * DISPLAY_MULT)).div(DISPLAY_MULT)
+}
+
+function formatAmount(wei) {
+  return (wei.mul(DISPLAY_MULT).div(TEN_TO_18).toNumber() / DISPLAY_MULT).toFixed(DISPLAY_PRECISION)
 }

@@ -1,5 +1,7 @@
 import { formatEther } from '@ethersproject/units'
+
 import ERC20ABI from '../abi/ERC20.abi.json'
+import VaultABI from '../abi/LidoVault.abi.json'
 
 export const Networks = {
   MainNet: 1,
@@ -19,7 +21,6 @@ export const TOKENS_BY_ID = {
     name: 'stETH',
     symbol: 'stETH',
     decimals: 18,
-    needsApprove: true,
     abi: ERC20ABI,
   },
   [TokenIds.YVSTETH]: {
@@ -27,8 +28,7 @@ export const TOKENS_BY_ID = {
     symbol: 'yvstETH',
     name: 'yvstETH',
     decimals: 18,
-    needsApprove: false,
-    abi: ERC20ABI,
+    abi: VaultABI,
   },
 }
 
