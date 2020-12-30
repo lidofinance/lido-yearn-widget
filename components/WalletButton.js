@@ -5,7 +5,7 @@ import { useWeb3React } from '@web3-react/core'
 import { injectedConnector } from '../connectors'
 import { formatEth } from '../utils'
 import useToken from '../hooks/useToken'
-import { blue, white, lightGray } from './colors'
+import { blue, white, lightGray, denim } from './colors'
 
 const ConnectButton = styled.button`
   margin-top: -8px;
@@ -18,6 +18,10 @@ const ConnectButton = styled.button`
   border: none;
   outline: none;
   cursor: pointer;
+
+  &:hover {
+    background: ${denim};
+  }
 `
 
 const AddressBalancePanel = styled.div`

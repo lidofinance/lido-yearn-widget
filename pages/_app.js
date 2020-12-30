@@ -7,6 +7,7 @@ import fetcher from 'swr-eth'
 import { SWRConfig } from 'swr'
 import { useWeb3React } from '@web3-react/core'
 import Header from '../components/Header'
+import WalletButton from '../components/WalletButton'
 import { useEagerConnect } from '../hooks/useEagerConnect'
 import { useInactiveListener } from '../hooks/useInactiveListener'
 import { VALID_TOKEN_IDS, getTokenConfig, Networks } from '../utils'
@@ -27,6 +28,33 @@ const GlobalStyle = createGlobalStyle`
 const PageContainer = styled.div`
   background-color: #eef2f4;
 `
+
+const Title = styled.div`
+  margin: 0 auto;
+  text-align: center;
+  margin-top: 56px;
+  color: #2a2a2a;
+  font-size: 32px;
+  max-width: 600px;
+`
+const Subtitle = styled.div`
+  margin: 0 auto;
+  text-align: center;
+  margin-top: 8px;
+  color: #505a7a;
+  font-size: 16px;
+  width: 60%;
+  max-width: 600px;
+  margin-bottom: 32px;
+`
+
+const Wrapper = styled.div`
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-direction: column;
+`
+
 
 function getLibrary(provider) {
   const library = new Web3Provider(provider, 'any')
@@ -70,12 +98,37 @@ function SwrReadyPage({ children }) {
         </Head>
         <GlobalStyle />
         <Header />
-        {!active && 'Connect to Ethereum wallet'}
-        {active &&
-          !networkSupported &&
-          `Network isn't supported, please, use Mainnet or Rinkeby`}
+        <NotConnected active={active} networkSupported={networkSupported} />
         {active && networkSupported && children}
       </PageContainer>
     </SWRConfig>
   )
+}
+
+const NotConnected = ({active, networkSupported}) => {
+  if (!active && !networkSupported ) {
+    return (
+      <Wrapper>
+        <Title>Yearn Lido St. Ether Vault</Title>
+        <Subtitle>
+          Network isn't supported, please, use Mainnet or Rinkeby
+        </Subtitle>
+      </Wrapper>
+    )
+  }
+
+  if (!active) {
+    return (
+      <Wrapper>
+        <Title>Yearn Lido St. Ether Vault</Title>
+        <Subtitle>
+          A wrapper for Lido stETH which uses underlying shares instead of
+          balances which can change outside transfers. Built for DeFi.
+        </Subtitle>
+        <WalletButton>Connect to Ethereum wallet</WalletButton>
+      </Wrapper>
+    )
+  }
+
+  return null
 }
