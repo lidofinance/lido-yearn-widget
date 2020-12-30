@@ -8,7 +8,7 @@ import useToken from '../hooks/useToken'
 import { blue, white, lightGray, denim } from './colors'
 
 const ConnectButton = styled.button`
-  margin-top: -2px;
+  margin-top: -3px;
   padding: 8px 24px;
   border-radius: 6px;
   background-color: ${blue};

@@ -122,13 +122,6 @@ const Logo = () => (
   </svg>
 )
 
-const LogoContainer = styled.div`
-`
-
-const WalletContainer = styled.div`
-
-`
-
 const HeaderWrapper = styled.div`
   position: relative;
 `
@@ -140,16 +133,12 @@ export default function Header() {
         <Disclaimer>This project is in beta. Use at your own risk.</Disclaimer>
       </DisclaimerContainer>
       <HeaderContainer>
-        <LogoContainer>
-          <Link href="/">
-            <div>
-              <Logo />
-            </div>
-          </Link>
-        </LogoContainer>
-        <WalletContainer>
-          <WalletButton />
-        </WalletContainer>
+        <Link href="/">
+          <div>
+            <Logo />
+          </div>
+        </Link>
+        <WalletButton />
       </HeaderContainer>
     </HeaderWrapper>
   )
