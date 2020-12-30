@@ -122,7 +122,7 @@ const ButtonTag = styled.button`
   }
 `
 
-const MAX_AMOUNT = BigNumber.from('0xffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff')
+const MAX_AMOUNT = BigNumber.from(2).pow(256).sub(1)
 const TEN_TO_18 = BigNumber.from(10).pow(18)
 
 const DISPLAY_PRECISION = 4
@@ -154,6 +154,8 @@ export default function Converter({ to: assetTo, from: assetFrom }) {
     : MAX_AMOUNT
 
   const isFetching = balanceFrom === undefined || approvedAmount === undefined
+  const [isTransacting, setIsTransacting] = useState(false)
+  const [txHash, setTxHash] = useState(null)
 
   const [fromDisplayAmount, setFromDisplayAmount] = useState('')
   const [toDisplayAmount, setToDisplayAmount] = useState('')
@@ -198,6 +200,25 @@ export default function Converter({ to: assetTo, from: assetFrom }) {
     isToYvstEth: !(isSubmit || isDeposit)
   })
 
+  const approveDisabled = isFetching || isTransacting || isApprovalSufficient
+  const swapDisabled = isFetching || isTransacting || !isApprovalSufficient
+
+  const doApprove = async () => {
+    try {
+      setIsTransacting(true)
+      const tx = await tokenFrom.contract.approve(vault.address, MAX_AMOUNT)
+      setTxHash(tx.hash)
+      await tx.wait(1)
+    } finally {
+      setIsTransacting(false)
+      setTxHash(null)
+    }
+  }
+
+  // TODO: display a blocking popup
+  // isTransacting == true, txHash == null => "Please sign the transaction"
+  // isTransacting == true, txHash != null => "Waiting for inclusion in a block, hash: {txHash}"
+
   return (
     <Center>
       <Panel>
@@ -231,8 +252,10 @@ export default function Converter({ to: assetTo, from: assetFrom }) {
           </TokenInputSecondRow>
         </TokenInput>
         <ButtonContainer>
-          {isDeposit ? <ButtonTag disabled={isFetching || isApprovalSufficient}>Approve</ButtonTag> : null }
-          <ButtonTag disabled={isFetching || !isApprovalSufficient}>Swap</ButtonTag>
+          {isDeposit
+            ? <ButtonTag disabled={approveDisabled} onClick={doApprove}>Approve</ButtonTag>
+            : null}
+          <ButtonTag disabled={swapDisabled}>Swap</ButtonTag>
         </ButtonContainer>
       </Panel>
     </Center>
