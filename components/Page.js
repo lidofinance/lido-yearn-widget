@@ -43,16 +43,10 @@ export default function Page({ children }) {
 }
 
 function SwrReadyPage({ children }) {
-  const { active, chainId, library, connector } = useWeb3React()
-  const [activatingConnector, setActivatingConnector] = useState()
-  useEffect(() => {
-    console.log('Wallet running')
-    if (activatingConnector && activatingConnector === connector) {
-      setActivatingConnector(undefined)
-    }
-  }, [activatingConnector, connector])
+  const { active, chainId, library } = useWeb3React()
+
   const triedEager = useEagerConnect()
-  useInactiveListener(!triedEager || !!activatingConnector)
+  useInactiveListener(!triedEager)
 
   const ABIs = useMemo(() => {
     return VALID_TOKEN_IDS.map((tokenId) => {
