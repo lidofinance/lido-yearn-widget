@@ -2,6 +2,8 @@ import { BigNumber } from '@ethersproject/bignumber'
 import { useState } from 'react'
 import styled from 'styled-components'
 
+import TxPopup from './TxPopup'
+
 import useTokenSwap from '../hooks/useTokenSwap'
 import { TOKENS_BY_ID, formatEth } from '../utils'
 
@@ -192,6 +194,11 @@ export default function Converter({ to: assetTo, from: assetFrom }) {
 
   return (
     <Center>
+      <TxPopup
+        header='Please sign tx'
+        text='Swap 0.01 stETH to 0.23 yvstETH'
+        action='Confirm this transaction in your wallet'
+      />
       <Panel>
         <TokenInput>
           <TokenInputFirstRow>
