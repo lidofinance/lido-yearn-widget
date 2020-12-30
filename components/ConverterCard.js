@@ -3,8 +3,24 @@ import Link from 'next/link'
 
 import useToken from '../hooks/useToken'
 import { TOKENS_BY_ID, formatEth } from '../utils'
+import { white } from './colors'
 
-import Card from './Card'
+const Card = styled.div`
+  background: ${white};
+  border-radius: 16px;
+  width: 280px;
+  height: 280px;
+  border-radius: 16px;
+  margin-right: 36px;
+  display: flex;
+  justify-content: flex-end;
+  flex-direction: column;
+  align-items: center;
+
+  &:last-child {
+    margin-right: 0px;
+  }
+`
 
 const Balance = styled.div`
   margin-top: 36px;
@@ -23,6 +39,7 @@ const Available = styled.div`
 
 const Button = styled.div`
   margin: 12px;
+  margin-top: 16px;
   background-color: #f4f6f8;
   border-radius: 8px;
   font-size: 12px;
