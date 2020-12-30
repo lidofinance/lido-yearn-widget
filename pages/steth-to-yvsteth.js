@@ -28,7 +28,7 @@ export default function StETHToYvStETH() {
     <Page>
       <Title>stETH to yvstETH</Title>
       <Subtitle>
-        First, approve Yyear Vault contract to spend stETH tokens, than swap.
+        First, approve Yearn Lido St. Ether Vault contract to spend your stETH tokens, then swap.
       </Subtitle>
       <Converter from={TokenIds.STETH} to={TokenIds.YVSTETH} />
     </Page>

@@ -23,7 +23,7 @@ const Subtitle = styled.div`
   max-width: 400px;
 `
 
-export default function YvStETHToStETHT() {
+export default function YvStETHToStETH() {
   return (
     <Page>
       <Title>yvstETH to stETH</Title>
