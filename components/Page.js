@@ -1,4 +1,4 @@
-import { useMemo } from 'react'
+import { useState, useEffect, useMemo } from 'react'
 import styled, { createGlobalStyle } from 'styled-components'
 import Head from 'next/head'
 import { Web3ReactProvider } from '@web3-react/core'
@@ -8,6 +8,7 @@ import { SWRConfig } from 'swr'
 import { useWeb3React } from '@web3-react/core'
 import Header from './Header'
 import { useEagerConnect } from '../hooks/useEagerConnect'
+import { useInactiveListener } from '../hooks/useInactiveListener'
 import { VALID_TOKEN_IDS, getTokenConfig, Networks } from '../utils'
 
 const GlobalStyle = createGlobalStyle`
@@ -41,12 +42,20 @@ export default function Page({ children }) {
 }
 
 function SwrReadyPage({ children }) {
-  const { active, chainId, library } = useWeb3React()
-  useEagerConnect()
+  const { active, chainId, library, connector } = useWeb3React()
+  const [activatingConnector, setActivatingConnector] = useState()
+  useEffect(() => {
+    console.log('Wallet running')
+    if (activatingConnector && activatingConnector === connector) {
+      setActivatingConnector(undefined)
+    }
+  }, [activatingConnector, connector])
+  const triedEager = useEagerConnect()
+  useInactiveListener(!triedEager)
 
   const ABIs = useMemo(() => {
-    return VALID_TOKEN_IDS.map(tokenId => {
-      const {address, abi} = getTokenConfig(tokenId, chainId)
+    return VALID_TOKEN_IDS.map((tokenId) => {
+      const { address, abi } = getTokenConfig(tokenId, chainId)
       return [address, abi]
     })
   }, [chainId])
