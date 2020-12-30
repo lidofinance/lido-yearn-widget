@@ -52,7 +52,7 @@ function SwrReadyPage({ children }) {
     }
   }, [activatingConnector, connector])
   const triedEager = useEagerConnect()
-  useInactiveListener(!triedEager)
+  useInactiveListener(!triedEager || !!activatingConnector)
 
   const ABIs = useMemo(() => {
     return VALID_TOKEN_IDS.map((tokenId) => {
