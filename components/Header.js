@@ -126,6 +126,10 @@ const HeaderWrapper = styled.div`
   position: relative;
 `
 
+const LogoWrapper = styled.div`
+  cursor: pointer;
+`
+
 export default function Header() {
   return (
     <HeaderWrapper>
@@ -134,9 +138,9 @@ export default function Header() {
       </DisclaimerContainer>
       <HeaderContainer>
         <Link href="/">
-          <div>
+          <LogoWrapper>
             <Logo />
-          </div>
+          </LogoWrapper>
         </Link>
         <WalletButton />
       </HeaderContainer>
