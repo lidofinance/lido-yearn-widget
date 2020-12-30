@@ -145,6 +145,7 @@ export default function Converter({ to: assetTo, from: assetFrom }) {
     isTransacting,
     txHash,
     doApprove,
+    doSwap,
   } = useTokenSwap(assetFrom, assetTo, fromAmount)
 
   const makeAmtChangeListener = ({
@@ -203,7 +204,7 @@ export default function Converter({ to: assetTo, from: assetFrom }) {
               onChange={(e) => onFromAmtChanged(e)}
               placeholder={PLACEHOLDER}
             />
-            <span>{isSubmit ? 'eth' : TOKENS_BY_ID[assetFrom].name}</span>
+            <span>{isSubmit ? 'ETH' : TOKENS_BY_ID[assetFrom].name}</span>
           </TokenInputSecondRow>
         </TokenInput>
         <PricePerShare>Rate: {formatEth(stEthPerYvstEth)}</PricePerShare>
@@ -225,7 +226,7 @@ export default function Converter({ to: assetTo, from: assetFrom }) {
           {isDeposit
             ? <ButtonTag disabled={approveDisabled} onClick={doApprove}>Approve</ButtonTag>
             : null}
-          <ButtonTag disabled={swapDisabled}>Swap</ButtonTag>
+          <ButtonTag disabled={swapDisabled} onClick={doSwap}>Swap</ButtonTag>
         </ButtonContainer>
       </Panel>
     </Center>

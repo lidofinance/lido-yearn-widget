@@ -23,6 +23,7 @@ export default function useToken(tokenId) {
     : [tokenConfig.address, 'balanceOf', account]
 
   const { data: balance, mutate } = useSWR(swrArgs)
+  const invalidateBalance = () => mutate(undefined, true)
 
   const subscribeToETHUpdates = () => {
     if (!account || !library) {
@@ -33,7 +34,7 @@ export default function useToken(tokenId) {
 
     const onBlock = () => {
       console.log('update balance...')
-      mutate(undefined, true)
+      invalidateBalance()
     }
 
     library.on('block', onBlock)
@@ -49,9 +50,9 @@ export default function useToken(tokenId) {
     const fromMe = contract.filters.Transfer(account, null)
     const toMe = contract.filters.Transfer(null, account)
 
-    const onTransfer = (from, to, amount, event) => {
+    const onTransfer = ({ from, to, amount, event }) => {
       console.log('Transfer', { from, to, amount, event })
-      mutate(undefined, true)
+      invalidateBalance()
     }
 
     library.on(fromMe, onTransfer)
@@ -66,5 +67,5 @@ export default function useToken(tokenId) {
   const subscribeToUpdates = isETH ? subscribeToETHUpdates : subscribeToTokenUpdates
   useEffect(subscribeToUpdates, [library, contract, account])
 
-  return { contract, balance }
+  return { contract, balance, invalidateBalance }
 }

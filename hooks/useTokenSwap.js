@@ -8,6 +8,7 @@ import { TokenIds } from '../utils'
 import useToken from './useToken'
 
 const MAX_AMOUNT = BigNumber.from(2).pow(256).sub(1)
+const NUM_TX_CONFIRMATIONS = 1
 
 
 export default function useTokenSwap(assetFrom, assetTo, amountFrom) {
@@ -16,7 +17,6 @@ export default function useTokenSwap(assetFrom, assetTo, amountFrom) {
 
   const tokenFrom = useToken(assetFrom)
   const tokenTo = useToken(assetTo)
-
   const vault = (isSubmit || isDeposit) ? tokenTo.contract : tokenFrom.contract
 
   // how many stETH wei one gets per 1e18 vystETH wei
@@ -34,19 +34,21 @@ export default function useTokenSwap(assetFrom, assetTo, amountFrom) {
   const [isTransacting, setIsTransacting] = useState(false)
   const [txHash, setTxHash] = useState(null)
 
+  const updateTransacting = (newIsTransacting) => {
+    if (isTransacting && !newIsTransacting) {
+      tokenFrom.invalidateBalance()
+      tokenTo.invalidateBalance()
+    }
+    setIsTransacting(newIsTransacting)
+  }
+
   const isApprovalSufficient = !isFetching && approvedAmount.gte(amountFrom)
 
-  const doApprove = async () => {
-    try {
-      setIsTransacting(true)
-      const tx = await tokenFrom.contract.approve(vault.address, MAX_AMOUNT)
-      setTxHash(tx.hash)
-      await tx.wait(1)
-    } finally {
-      setIsTransacting(false)
-      setTxHash(null)
-    }
-  }
+  const approveFn = isDeposit
+    ? () => tokenFrom.contract.approve(vault.address, MAX_AMOUNT)
+    : nop
+
+  const swapFn = makeSwapFn(isDeposit, isSubmit, amountFrom, vault)
 
   return {
     isSubmit,
@@ -58,7 +60,36 @@ export default function useTokenSwap(assetFrom, assetTo, amountFrom) {
     isFetching,
     isTransacting,
     txHash,
-    doApprove,
+    doApprove: wrapTx(updateTransacting, setTxHash, approveFn, NUM_TX_CONFIRMATIONS),
+    doSwap: wrapTx(updateTransacting, setTxHash, swapFn, NUM_TX_CONFIRMATIONS),
+  }
+}
+
+function makeSwapFn(isDeposit, isSubmit, fromAmount, vault) {
+  if (isDeposit) {
+    return () => vault['deposit(uint256)'](fromAmount)
+  }
+  if (isSubmit) {
+    return () => {
+      const { signer } = vault
+      return signer.sendTransaction({ to: vault.address, value: fromAmount })
+    }
+  }
+  // is withdrawal
+  return () => vault['withdraw(uint256)'](fromAmount)
+}
+
+function wrapTx(setIsTransacting, setTxHash, txFn, numConfirmations = 1) {
+  return async () => {
+    try {
+      setIsTransacting(true)
+      const tx = await txFn()
+      setTxHash(tx.hash)
+      await tx.wait(numConfirmations)
+    } finally {
+      setIsTransacting(false)
+      setTxHash(null)
+    }
   }
 }
 
@@ -88,3 +119,5 @@ function useTokenAllowance(contract, spenderAddress) {
 
   return allowance
 }
+
+function nop() {}
