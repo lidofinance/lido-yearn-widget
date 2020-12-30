@@ -1,8 +1,7 @@
 import styled from 'styled-components'
 import Link from 'next/link'
 
-import useEthBalance from '../hooks/useEthBalance'
-import useTokenBalance from '../hooks/useTokenBalance'
+import useToken from '../hooks/useToken'
 import { TOKENS_BY_ID, formatEth } from '../utils'
 
 import Card from './Card'
@@ -44,11 +43,12 @@ const Button = styled.div`
 
 export default function ConverterCard({ tokenConfig }) {
   const { assetFrom, assetTo, logo } = tokenConfig
+  const { balance } = useToken(assetFrom)
 
-  const isFromETH = assetFrom === 'eth'
-  const balance = isFromETH ? useEthBalance() : useTokenBalance(assetFrom)
+  const tokenFrom = assetFrom === 'eth'
+    ? { id: 'eth', name: 'ETH' }
+    : TOKENS_BY_ID[assetFrom]
 
-  const tokenFrom = isFromETH ? { id: 'eth', name: 'ETH' } : TOKENS_BY_ID[assetFrom]
   const tokenTo = TOKENS_BY_ID[assetTo]
 
   return (
