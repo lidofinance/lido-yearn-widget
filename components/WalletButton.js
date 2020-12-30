@@ -17,6 +17,7 @@ const ConnectButton = styled.button`
   color: ${white};
   border: none;
   outline: none;
+  cursor: pointer;
 `
 
 const AddressBalancePanel = styled.div`
