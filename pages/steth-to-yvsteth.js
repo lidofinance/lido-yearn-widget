@@ -1,6 +1,5 @@
 import styled from 'styled-components'
 
-import Page from '../components/Page'
 import Converter from '../components/Converter'
 
 import { TokenIds } from '../utils'
@@ -25,12 +24,13 @@ const Subtitle = styled.div`
 
 export default function StETHToYvStETH() {
   return (
-    <Page>
+    <>
       <Title>stETH to yvstETH</Title>
       <Subtitle>
-        First, approve Yearn Lido St. Ether Vault contract to spend your stETH tokens, then swap.
+        First, approve Yearn Lido St. Ether Vault contract to spend your stETH
+        tokens, then swap.
       </Subtitle>
       <Converter from={TokenIds.STETH} to={TokenIds.YVSTETH} />
-    </Page>
+    </>
   )
 }

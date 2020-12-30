@@ -1,6 +1,5 @@
 import styled from 'styled-components'
 
-import Page from '../components/Page'
 import ConverterCard from '../components/ConverterCard'
 
 import Eth from '../components/token-logos/Eth'
@@ -54,7 +53,7 @@ const conversions = [
 
 export default function DefaultPage() {
   return (
-    <Page>
+    <>
       <Title>Yearn Lido St. Ether Vault</Title>
       <Subtitle>
         A wrapper for Lido stETH which uses underlying shares instead of
@@ -68,6 +67,6 @@ export default function DefaultPage() {
           />
         ))}
       </CardWrapper>
-    </Page>
+    </>
   )
 }

@@ -1,4 +1,4 @@
-import { useState, useEffect, useMemo } from 'react'
+import { useMemo } from 'react'
 import styled, { createGlobalStyle } from 'styled-components'
 import Head from 'next/head'
 import { Web3ReactProvider } from '@web3-react/core'
@@ -6,7 +6,7 @@ import { Web3Provider } from '@ethersproject/providers'
 import fetcher from 'swr-eth'
 import { SWRConfig } from 'swr'
 import { useWeb3React } from '@web3-react/core'
-import Header from './Header'
+import Header from '../components/Header'
 import { useEagerConnect } from '../hooks/useEagerConnect'
 import { useInactiveListener } from '../hooks/useInactiveListener'
 import { VALID_TOKEN_IDS, getTokenConfig, Networks } from '../utils'
@@ -34,10 +34,12 @@ function getLibrary(provider) {
   return library
 }
 
-export default function Page({ children }) {
+export default function MyApp({ Component, pageProps }) {
   return (
     <Web3ReactProvider getLibrary={getLibrary}>
-      <SwrReadyPage>{children}</SwrReadyPage>
+      <SwrReadyPage>
+        <Component {...pageProps} />
+      </SwrReadyPage>
     </Web3ReactProvider>
   )
 }
