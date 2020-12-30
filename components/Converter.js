@@ -160,9 +160,12 @@ export default function Converter({ to: assetTo, from: assetFrom }) {
     setDstAmount, setDstDisplayAmount,
     isToYvstEth
   }) => (e) => {
-    setSrcDisplayAmount(e.target.value)
     const value = Number(e.target.value)
-    if (isNaN(value) || isFetching) {
+    if (isNaN(value) || value < 0) {
+      return
+    }
+    setSrcDisplayAmount(e.target.value)
+    if (isFetching) {
       return
     }
     const srcAmount = parseAmount(value)
