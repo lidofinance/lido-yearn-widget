@@ -74,6 +74,7 @@ export default function MyApp({ Component, pageProps }) {
 
 function SwrReadyPage({ children }) {
   const { active, chainId, library } = useWeb3React()
+  console.log({ active, chainId, library })
 
   const triedEager = useEagerConnect()
   useInactiveListener(!triedEager)
@@ -105,18 +106,7 @@ function SwrReadyPage({ children }) {
   )
 }
 
-const NotConnected = ({active, chainSupported}) => {
-  if (!active && !chainSupported) {
-    return (
-      <Wrapper>
-        <Title>Yearn Lido St. Ether Vault</Title>
-        <Subtitle>
-          Network isn't supported, please, use Mainnet or Rinkeby
-        </Subtitle>
-      </Wrapper>
-    )
-  }
-
+const NotConnected = ({ active, chainSupported }) => {
   if (!active) {
     return (
       <Wrapper>
@@ -129,6 +119,15 @@ const NotConnected = ({active, chainSupported}) => {
       </Wrapper>
     )
   }
-
+  if (!chainSupported) {
+    return (
+      <Wrapper>
+        <Title>Yearn Lido St. Ether Vault</Title>
+        <Subtitle>
+          The selected network isn't supported, please use Mainnet or Rinkeby.
+        </Subtitle>
+      </Wrapper>
+    )
+  }
   return null
 }
