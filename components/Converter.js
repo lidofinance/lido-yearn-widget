@@ -65,6 +65,7 @@ const Input = styled.input`
   margin: 0;
   padding-top: 7px;
   width: 100%;
+  min-width: 0;
   outline: none;
   border: none;
 
@@ -109,6 +110,7 @@ const ButtonTag = styled.button`
   background: ${(props) => (props.disabled ? '#F4F6F8' : '#1F7BF1')};
   color: ${(props) => (props.disabled ? '#B5B7B9' : 'white')};
   border: 1px solid transparent;
+  font-size: 14px;
 
   &:hover {
     background: ${(props) => (props.disabled ? '#F4F6F8' : '#1366BF')};
