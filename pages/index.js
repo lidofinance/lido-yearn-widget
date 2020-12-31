@@ -38,16 +38,22 @@ const conversions = [
     assetFrom: TokenIds.STETH,
     assetTo: TokenIds.YVSTETH,
     logo: <Lido />,
+    glow: '#49DCE9',
+    bg: '#1CA5FC'
   },
   {
     assetFrom: TokenIds.YVSTETH,
     assetTo: TokenIds.STETH,
     logo: <YearnLido />,
+    glow: '#1767BF',
+    bg: '#2EA6EE'
   },
   {
     assetFrom: 'eth',
     assetTo: TokenIds.YVSTETH,
     logo: <Eth />,
+    bg: '#000000',
+    glow: '#626263'
   },
 ]
 
@@ -63,6 +69,8 @@ export default function DefaultPage() {
         {conversions.map((tokenConfig) => (
           <ConverterCard
             tokenConfig={tokenConfig}
+            glow={tokenConfig.glow}
+            bg={tokenConfig.bg}
             key={`${tokenConfig.assetFrom}-${tokenConfig.assetTo}-converter`}
           />
         ))}
