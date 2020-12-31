@@ -15,6 +15,7 @@ const Card = styled.div`
   height: 280px;
   border-radius: 16px;
   margin-right: 36px;
+  cursor: pointer;
 
   &:last-child {
     margin-right: 0px;
@@ -46,6 +47,7 @@ const Card = styled.div`
   &:hover > div > span {
     color: white;
   }
+
 `
 
 const CardContent = styled.div`
@@ -90,8 +92,7 @@ const Button = styled.div`
   cursor: pointer;
 
   &:hover {
-    background-color: #1477f5;
-    color: #fff;
+    background-color: #E0E9F1;
   }
 `
 
@@ -134,24 +135,23 @@ export default function ConverterCard({ tokenConfig }) {
   const tokenTo = TOKENS_BY_ID[assetTo]
 
   return (
-    <Card
-      ref={elRef}
-      style={{
-        "--x": `${position.x}px`,
-        "--y": `${position.y}px`,
-        "--glow": glow,
-        "--bg": bg,
-      }}
-    >
-      <CardContent>
-        {logo}
-        <Balance>{`${formatEth(balance)}`}</Balance>
-        <Available>{tokenFrom.name} Available</Available>
-
-        <Link href={`/${tokenFrom.id}-to-${tokenTo.id}`}>
+    <Link href={`/${tokenFrom.id}-to-${tokenTo.id}`}>
+      <Card
+        ref={elRef}
+        style={{
+          "--x": `${position.x}px`,
+          "--y": `${position.y}px`,
+          "--glow": glow,
+          "--bg": bg,
+        }}
+      >
+        <CardContent>
+          {logo}
+          <Balance>{`${formatEth(balance)}`}</Balance>
+          <Available>{tokenFrom.name} Available</Available>
           <Button>Convert to {tokenTo.name}</Button>
-        </Link>
-      </CardContent>
-    </Card>
+        </CardContent>
+      </Card>
+    </Link>
   )
 }
