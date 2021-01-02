@@ -135,7 +135,7 @@ export default function ConverterCard({ tokenConfig }) {
   const tokenTo = TOKENS_BY_ID[assetTo]
 
   return (
-    <Link href={`/${tokenFrom.id}-to-${tokenTo.id}`}>
+    <Link href={`/?view=${tokenFrom.id}-to-${tokenTo.id}`} shallow={true}>
       <Card
         ref={elRef}
         style={{

@@ -1,6 +1,8 @@
 import styled from 'styled-components'
+import { useRouter } from 'next/router'
 
 import ConverterCard from '../components/ConverterCard'
+import Converter from '../components/Converter'
 
 import Eth from '../components/token-logos/Eth'
 import Lido from '../components/token-logos/Lido'
@@ -16,6 +18,7 @@ const Title = styled.div`
   font-size: 32px;
   max-width: 600px;
 `
+
 const Subtitle = styled.div`
   margin: 0 auto;
   text-align: center;
@@ -24,6 +27,10 @@ const Subtitle = styled.div`
   font-size: 16px;
   width: 60%;
   max-width: 600px;
+`
+
+const ConverterSubtitle = styled(Subtitle)`
+  max-width: 400px;
 `
 
 const CardWrapper = styled.div`
@@ -58,12 +65,22 @@ const conversions = [
 ]
 
 export default function DefaultPage() {
+  const router = useRouter()
+  switch (router.query.view) {
+    case 'steth-to-yvsteth': return StethToYvsteth()
+    case 'yvsteth-to-steth': return YvstethToSteth()
+    case 'eth-to-yvsteth': return EthToYvsteth()
+    default: return ConversionsList()
+  }
+}
+
+function ConversionsList() {
   return (
     <>
       <Title>Yearn Lido St. Ether Vault</Title>
       <Subtitle>
         A wrapper for Lido stETH which uses underlying shares instead of
-        balances which can change outside transfers. Built for DeFi.
+        balances that can change outside transfers. Built for DeFi.
       </Subtitle>
       <CardWrapper>
         {conversions.map((tokenConfig) => (
@@ -75,6 +92,37 @@ export default function DefaultPage() {
           />
         ))}
       </CardWrapper>
+    </>
+  )
+}
+
+function EthToYvsteth() {
+  return (
+    <>
+      <Title>ETH to yvstETH</Title>
+      <Converter from="eth" to={TokenIds.YVSTETH} />
+    </>
+  )
+}
+
+function StethToYvsteth() {
+  return (
+    <>
+      <Title>stETH to yvstETH</Title>
+      <ConverterSubtitle>
+        First, approve Yearn Lido St. Ether Vault contract to spend your stETH
+        tokens, then swap.
+      </ConverterSubtitle>
+      <Converter from={TokenIds.STETH} to={TokenIds.YVSTETH} />
+    </>
+  )
+}
+
+function YvstethToSteth() {
+  return (
+    <>
+      <Title>yvstETH to stETH</Title>
+      <Converter from={TokenIds.YVSTETH} to={TokenIds.STETH} />
     </>
   )
 }

@@ -137,7 +137,7 @@ export default function Header() {
         <Disclaimer>This project is in beta. Use at your own risk.</Disclaimer>
       </DisclaimerContainer>
       <HeaderContainer>
-        <Link href="/">
+        <Link href="/" shallow={true}>
           <LogoWrapper>
             <Logo />
           </LogoWrapper>
