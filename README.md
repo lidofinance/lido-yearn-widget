@@ -23,7 +23,7 @@ yarn dev
 To build the static output, run:
 
 ```text
-rm -rf out && yarn export
+yarn export
 ```
 
 This will generate the `out` directory containing the static build.

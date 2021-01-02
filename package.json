@@ -10,7 +10,7 @@
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
-    "export": "next build && next export"
+    "export": "rm -rf .next out && next build && next export"
   },
   "dependencies": {
     "@ethersproject/address": "^5.0.8",
